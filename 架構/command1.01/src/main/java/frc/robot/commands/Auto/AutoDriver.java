@@ -7,9 +7,11 @@
 
 package frc.robot.commands.Auto;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutoDriver extends CommandBase {
+  int i =0;
   /**
    * Creates a new AutoDriver.
    */
@@ -20,6 +22,7 @@ public class AutoDriver extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
