@@ -35,6 +35,9 @@ public final class Constants {
       
         public static final double kP = 8.4;
     }
+    public class Trackconstants {
+        public static final double V =10;
     
     
-}
+}}
+
