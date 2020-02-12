@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "frcJava (in project TrajectoryRE)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "TrajectoryRE",
+    "language": "java"
+  }
+]
