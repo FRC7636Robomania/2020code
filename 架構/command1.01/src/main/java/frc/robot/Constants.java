@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.util.Units;
+import jdk.jshell.Diag;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -20,12 +21,30 @@ import edu.wpi.first.wpilibj.util.Units;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public class Trajectoryconstants {
+    public class Drivetrainconstants {
+        public static final int pidsolt=0;
+        public static final int LeftmasterID =0;
+        public static final int LeftfollowerID =1;
+        public static final int RightmasterID =2;
+        public static final int RightfollowerID =3;
+        public static final int timeoutMs = 10;
         public static final double rotationPerPulse = 2048;
         public static final double wheeldiameter = 0.1524;
         //unit meter
         public static final double distantsPerPulse = 2 * Math.PI * 0.1524/ rotationPerPulse;
-        //每encoder單位轉動距離
+        public static final double kP = 0.01;
+        public static final double kF = 0.04;
+        public static final double MaxSpeed = 17000;
+        public static final double MaxAcc = 9000;
+        public static final double MaxAmp = 40;
+
+
+
+
+        
+
+    }
+    public class Trajectoryconstants {
 
         public static final double kS = 1.07;
       
