@@ -1,34 +1,41 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.Constants.Drivetrainconstants;
-import com.ctre.phoenix.CANifier.LEDChannel;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
-//import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.*;
 
-public class Drivetrain extends SubsystemBase {
+
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the TimedRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the build.gradle file in the
+ * project.
+ */
+public class Robot extends TimedRobot {  
   WPI_TalonSRX Leftmaster    = new WPI_TalonSRX(Constants.Drivetrainconstants.LeftmasterID);
   WPI_TalonSRX Rightmaster   = new WPI_TalonSRX(Constants.Drivetrainconstants.RightmasterID);
   WPI_VictorSPX Leftfollower  = new WPI_VictorSPX(Constants.Drivetrainconstants.LeftfollowerID);
   WPI_VictorSPX Rightfollower = new WPI_VictorSPX(Constants.Drivetrainconstants.RightfollowerID);
 
   /**
-   * Creates a new Drivetrain.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
-  public Drivetrain() {
+  @Override
+  public void robotInit() {
+    
     Leftmaster.configFactoryDefault();
     Rightmaster.configFactoryDefault();
     Leftfollower.configFactoryDefault();
@@ -77,31 +84,30 @@ public class Drivetrain extends SubsystemBase {
 
     Leftmaster.setNeutralMode(NeutralMode.Brake);
     Rightmaster.setNeutralMode(NeutralMode.Brake);
-/*
-    Rightmaster.configRemoteFeedbackFilter(Leftmaster.getDeviceID(),					// Device ID of Source
-												RemoteSensorSource.TalonSRX_SelectedSensor,	// Remote Feedback Source
-												Drivetrainconstants.remotesensorID0,							// Source number [0, 1]
-												Drivetrainconstants.timeoutMs);						// Configuration Timeout
-		*/
-    
-
-
-
-  }
-  
-  
-  public void CurvatureDrive(double Joystick){
-    SmartDashboard.putNumber("runsubmethodcura",Joystick);
-  }
-  public void AutoDrive(){
-  }
-  public void AuxiliaryDrive(){
   }
 
   @Override
-  public void periodic() {
-    SmartDashboard.putNumber("Right", Rightmaster.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Left", Leftmaster.getSelectedSensorPosition());
-    // This method will be called once per scheduler run
+  public void autonomousInit() {
   }
+
+  @Override
+  public void autonomousPeriodic() {
+  }
+
+  @Override
+  public void teleopInit() {
+  }
+
+  @Override
+  public void teleopPeriodic() {
+  }
+
+  @Override
+  public void testInit() {
+  }
+
+  @Override
+  public void testPeriodic() {
+  }
+
 }
