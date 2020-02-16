@@ -57,5 +57,10 @@ public final class Constants {
         public static final double V =10;
     
     
-}}
+}   
+    public class limelightconstants{
+        public static final double kP=0.03;
+
+    }
+}
 

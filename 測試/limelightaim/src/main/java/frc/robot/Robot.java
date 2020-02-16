@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants.Drivetrainconstants;
+import frc.robot.Constants.limelightconstants;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -31,6 +32,9 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * project.
  */
 public class Robot extends TimedRobot {  
+  WPI_VictorSPX flywheel = new WPI_VictorSPX(2);
+  WPI_VictorSPX intake = new WPI_VictorSPX(1);
+  WPI_VictorSPX feed = new WPI_VictorSPX(6);
   WPI_TalonSRX Leftmaster    = new WPI_TalonSRX(Constants.Drivetrainconstants.LeftmasterID);
   WPI_TalonSRX Rightmaster   = new WPI_TalonSRX(Constants.Drivetrainconstants.RightmasterID);
   WPI_VictorSPX Leftfollower  = new WPI_VictorSPX(Constants.Drivetrainconstants.LeftfollowerID);
@@ -40,7 +44,8 @@ public class Robot extends TimedRobot {
   
   double m_quickStopAccumulator=0;
   double leftout,rightoutput,x,y,area;
-  
+  double disterr,rotationerr;
+  double i =0;
   
   /**
    * This function is run when the robot is first started up and should be used
@@ -122,13 +127,35 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    rotationerr =0;
+    disterr =0;
+    
   }
 
   @Override
   public void teleopPeriodic() {
+    if(joystick.getRawAxis(3)>0.75){
+      flywheel.set(ControlMode.PercentOutput,0.7);
+      i++;
+      if(area>0){
+      rotationerr = limelightconstants.kP*x;
+     }
+    }
+    else{
+      i=0;
+      rotationerr =0;
+      feed.set(0);
+    }
+    if(i>200&joystick.getRawButton(3)){
+      feed.set(1);
+
+
+      
+    }
+
     
-    Leftmaster.set(ControlMode.Velocity,2000*leftout,DemandType.ArbitraryFeedForward,-0.03*x);
-    Rightmaster.set(ControlMode.Velocity,-2000*leftout,DemandType.ArbitraryFeedForward,0.03*x);
+    Leftmaster.set(ControlMode.Velocity,2000*leftout);
+    Rightmaster.set(ControlMode.Velocity,-2000*leftout);
 
     //SmartDashboard.putNumber("joyraw", joystick.getRawAxis(1));
     //SmartDashboard.putNumber("joysch", 0.3*joystick.getRawAxis(1)+0.7*Math.pow(joystick.getRawAxis(1),5.0));
@@ -168,9 +195,9 @@ public class Robot extends TimedRobot {
   @SuppressWarnings({"ParameterName", "PMD.CyclomaticComplexity"})
   public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
 
-    xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
+    xSpeed = MathUtil.clamp(xSpeed+disterr, -1.0, 1.0);
 
-    zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
+    zRotation = MathUtil.clamp(zRotation+rotationerr, -1.0, 1.0);
 
     double angularPower;
     boolean overPower;
