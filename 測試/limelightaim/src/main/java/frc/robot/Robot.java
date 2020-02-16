@@ -7,13 +7,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants.Drivetrainconstants;
-import java.math.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -33,8 +36,10 @@ public class Robot extends TimedRobot {
   WPI_VictorSPX Leftfollower  = new WPI_VictorSPX(Constants.Drivetrainconstants.LeftfollowerID);
   WPI_VictorSPX Rightfollower = new WPI_VictorSPX(Constants.Drivetrainconstants.RightfollowerID);
   Joystick joystick = new Joystick(0);
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   
   double m_quickStopAccumulator=0;
+  double leftout,rightoutput,x,y,area;
   
   
   /**
@@ -92,11 +97,18 @@ public class Robot extends TimedRobot {
 
     Leftmaster.setNeutralMode(NeutralMode.Brake);
     Rightmaster.setNeutralMode(NeutralMode.Brake);
+
   }@Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("joyraw", joystick.getRawAxis(1));
-    SmartDashboard.putNumber("joysch", 0.3*joystick.getRawAxis(1)+0.7*Math.pow(joystick.getRawAxis(1),5.0));
-    
+   
+   
+    NetworkTableEntry tx = table.getEntry("tx");
+    NetworkTableEntry ty = table.getEntry("ty");
+    NetworkTableEntry ta = table.getEntry("ta");
+    x = tx.getDouble(0.0);
+    y = ty.getDouble(0.0);
+    area = ta.getDouble(0.0);
+
   }
 
   @Override
@@ -115,10 +127,11 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     
-    Leftmaster.set(ControlMode.Velocity,2000*joystick.getRawAxis(3));
-    Rightmaster.set(ControlMode.Velocity,-2000*joystick.getRawAxis(3));
-    SmartDashboard.putNumber("joyraw", joystick.getRawAxis(1));
-    SmartDashboard.putNumber("joysch", 0.3*joystick.getRawAxis(1)+0.7*Math.pow(joystick.getRawAxis(1),5.0));
+    Leftmaster.set(ControlMode.Velocity,2000*leftout,DemandType.ArbitraryFeedForward,-0.03*x);
+    Rightmaster.set(ControlMode.Velocity,-2000*leftout,DemandType.ArbitraryFeedForward,0.03*x);
+
+    //SmartDashboard.putNumber("joyraw", joystick.getRawAxis(1));
+    //SmartDashboard.putNumber("joysch", 0.3*joystick.getRawAxis(1)+0.7*Math.pow(joystick.getRawAxis(1),5.0));
     
     SmartDashboard.putNumber("LeftVel", Leftmaster.getSelectedSensorVelocity());
     SmartDashboard.putNumber("RightVel", Rightmaster.getSelectedSensorVelocity());
@@ -155,7 +168,6 @@ public class Robot extends TimedRobot {
   @SuppressWarnings({"ParameterName", "PMD.CyclomaticComplexity"})
   public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
 
-
     xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
 
     zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
@@ -163,8 +175,6 @@ public class Robot extends TimedRobot {
     double angularPower;
     boolean overPower;
     double m_quickStopAlpha =0.1;
-    double leftout,rightoutput;
-    
     if (isQuickTurn) {
       if (Math.abs(xSpeed) < 0.1) {
         m_quickStopAccumulator = (1 - 0.1) * m_quickStopAccumulator
@@ -219,4 +229,5 @@ public class Robot extends TimedRobot {
     m_rightMotor.set(rightMotorOutput * m_maxOutput * m_rightSideInvertMultiplier);
     */
 
-  }}
+  }
+}
