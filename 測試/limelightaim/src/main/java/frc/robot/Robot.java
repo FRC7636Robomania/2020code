@@ -78,7 +78,8 @@ public class Robot extends TimedRobot {
     Rightmaster.enableCurrentLimit(true);
     Leftmaster.enableCurrentLimit(true);
     Rightmaster.configContinuousCurrentLimit(Constants.Drivetrainconstants.MaxAmp);
-    
+    Leftmaster.configContinuousCurrentLimit(Constants.Drivetrainconstants.MaxAmp);
+
     Rightmaster.enableVoltageCompensation(true);
     Leftmaster.enableVoltageCompensation(true);
 
@@ -134,6 +135,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    
     if(joystick.getRawAxis(3)>0.75){
       flywheel.set(ControlMode.PercentOutput,0.7);
       i++;
@@ -148,18 +150,17 @@ public class Robot extends TimedRobot {
     }
     if(i>200&joystick.getRawButton(3)){
       feed.set(1);
-
-
-      
     }
 
-    
-    Leftmaster.set(ControlMode.Velocity,2000*leftout);
-    Rightmaster.set(ControlMode.Velocity,-2000*leftout);
+    curvatureDrive(joystick.getY(),0.5*joystick.getZ(),joystick.getRawButton(1));
+    Leftmaster.set(ControlMode.Velocity,3000*leftout);
+    Rightmaster.set(ControlMode.Velocity,3000*leftout);
 
     //SmartDashboard.putNumber("joyraw", joystick.getRawAxis(1));
     //SmartDashboard.putNumber("joysch", 0.3*joystick.getRawAxis(1)+0.7*Math.pow(joystick.getRawAxis(1),5.0));
-    
+    SmartDashboard.putNumber("i", i);
+    SmartDashboard.putNumber("tx", x);
+    SmartDashboard.putNumber("rotationerr", rotationerr);
     SmartDashboard.putNumber("LeftVel", Leftmaster.getSelectedSensorVelocity());
     SmartDashboard.putNumber("RightVel", Rightmaster.getSelectedSensorVelocity());
 
@@ -198,7 +199,7 @@ public class Robot extends TimedRobot {
     xSpeed = MathUtil.clamp(xSpeed+disterr, -1.0, 1.0);
 
     zRotation = MathUtil.clamp(zRotation+rotationerr, -1.0, 1.0);
-
+    SmartDashboard.putNumber("Rota",zRotation);
     double angularPower;
     boolean overPower;
     double m_quickStopAlpha =0.1;

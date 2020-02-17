@@ -90,18 +90,10 @@ public class Drivetrain extends SubsystemBase {
   }
   
   
-  public void CurvatureDrive(double Joystick){
-    SmartDashboard.putNumber("runsubmethodcura",Joystick);
-  }
-  public void AutoDrive(){
-  }
-  public void AuxiliaryDrive(){
-  }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Right", Rightmaster.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Left", Leftmaster.getSelectedSensorPosition());
-    // This method will be called once per scheduler run
+
+
   }
 }
