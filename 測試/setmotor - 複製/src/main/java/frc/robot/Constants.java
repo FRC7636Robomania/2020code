@@ -20,15 +20,15 @@ package frc.robot;
 public final class Constants {
     public class Drivetrainconstants {
         public static final int pidsolt=0;
-        public static final int LeftmasterID =9;
-        public static final int LeftfollowerID =0;
-        public static final int RightmasterID =7;
-        public static final int RightfollowerID =5;
+        public static final int LeftmasterID =18;
+        public static final int LeftfollowerID =20;
+        public static final int RightmasterID =21;
+        public static final int RightfollowerID =19;
         public static final int timeoutMs = 10;
         public static final double rotationPerPulse = 2048;
-        public static final double wheeldiameter = 0.1524;
+        public static final double wheeldiameter = 0.203;
         //unit meter
-        public static final double distantsPerPulse = 2 * Math.PI * 0.1524/ rotationPerPulse;
+        public static final double distantsPerPulse = 2 * Math.PI * wheeldiameter/ rotationPerPulse;
         public static final double kPdrive = 0.05;
         public static final double kIdrive = 0.00;
         public static final double kDdrive = 0.00;

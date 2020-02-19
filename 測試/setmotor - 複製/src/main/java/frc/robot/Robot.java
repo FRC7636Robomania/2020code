@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -32,21 +33,19 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  WPI_TalonSRX flywheel = new WPI_TalonSRX(10);
-  WPI_VictorSPX intake = new WPI_VictorSPX(1);
-  WPI_VictorSPX feed = new WPI_VictorSPX(6);
+  private final PowerDistributionPanel powerDistributionPanel= new PowerDistributionPanel(0);
   SupplyCurrentLimitConfiguration falconLim =new SupplyCurrentLimitConfiguration(true, 40, 50, 2);
    
-  WPI_TalonSRX Leftmaster    = new WPI_TalonSRX(Constants.Drivetrainconstants.LeftmasterID);
-  WPI_TalonSRX Rightmaster   = new WPI_TalonSRX(Constants.Drivetrainconstants.RightmasterID);
-  WPI_TalonSRX Leftfollower  = new WPI_TalonSRX(Constants.Drivetrainconstants.LeftfollowerID);
-  WPI_TalonSRX Rightfollower = new WPI_TalonSRX(Constants.Drivetrainconstants.RightfollowerID);
+  WPI_TalonFX Leftmaster    = new WPI_TalonFX(Constants.Drivetrainconstants.LeftmasterID);
+  WPI_TalonFX Rightmaster   = new WPI_TalonFX(Constants.Drivetrainconstants.RightmasterID);
+  WPI_TalonFX Leftfollower  = new WPI_TalonFX(Constants.Drivetrainconstants.LeftfollowerID);
+  WPI_TalonFX Rightfollower = new WPI_TalonFX(Constants.Drivetrainconstants.RightfollowerID);
   Joystick joystick = new Joystick(0);
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-unicorn");
   
   double m_quickStopAccumulator=0;
   double leftout,rightout;
-  double x,y,area;
+  double x,y,area,kT;
   double disterr,rotationerr;
   double i =0;
   
@@ -82,8 +81,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    flywheel.set(0.2);
-   
   }
 
   @Override
@@ -92,17 +89,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-
-    
-    curvatureDrive(0.2*joystick.getRawAxis(1)+0.8*Math.pow(joystick.getRawAxis(1), 5),-( 0.2*joystick.getRawAxis(2)+0.2*Math.pow(joystick.getRawAxis(2), 5)), joystick.getRawButton(1));
-   // Leftmaster.set(ControlMode.PercentOutput, leftout);
-    //Rightmaster.set(ControlMode.PercentOutput, rightout);
-
+    curvatureDrive(0.2*joystick.getRawAxis(1)+0.8*Math.pow(joystick.getRawAxis(1), 5),-( kT*joystick.getRawAxis(2)), joystick.getRawButton(1));
+    SmartDashboard.putData("PDP",powerDistributionPanel);
     Leftmaster.set(ControlMode.Velocity,4000*leftout);
     Rightmaster.set(ControlMode.Velocity,4000*rightout);
     SmartDashboard.putNumber("left", leftout);
     SmartDashboard.putNumber("right", rightout);
-     
     SmartDashboard.putNumber("LeftVel", Leftmaster.getSelectedSensorVelocity());
     SmartDashboard.putNumber("RightVel", Rightmaster.getSelectedSensorVelocity());
 
@@ -207,11 +199,9 @@ public class Robot extends TimedRobot {
     Rightfollower.configFactoryDefault();
 
 
-    flywheel.configFactoryDefault();
-
     
-    Leftmaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0,Constants.Drivetrainconstants.timeoutMs );
-    Rightmaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Constants.Drivetrainconstants.timeoutMs);
+    Leftmaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0,Constants.Drivetrainconstants.timeoutMs );
+    Rightmaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, Constants.Drivetrainconstants.timeoutMs);
     Leftmaster.setInverted(true);
     Rightmaster.setInverted(false);
     Leftfollower.setInverted(InvertType.FollowMaster);
@@ -229,7 +219,6 @@ public class Robot extends TimedRobot {
     Leftmaster.configSupplyCurrentLimit(falconLim);
     Rightfollower.configSupplyCurrentLimit(falconLim);
     Leftfollower.configSupplyCurrentLimit(falconLim);
-    flywheel.configSupplyCurrentLimit(falconLim);
 
     Rightmaster.enableVoltageCompensation(true);
     Leftmaster.enableVoltageCompensation(true);

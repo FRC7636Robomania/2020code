@@ -7,7 +7,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpiutil.math.MathUtil;
@@ -17,6 +21,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.*;
 
 
@@ -27,15 +32,25 @@ import com.ctre.phoenix.motorcontrol.can.*;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {  
+public class Robot extends TimedRobot {
+  private final PowerDistributionPanel powerDistributionPanel= new PowerDistributionPanel(0);
+  WPI_TalonSRX flywheel = new WPI_TalonSRX(10);
+  WPI_VictorSPX intake = new WPI_VictorSPX(1);
+  WPI_VictorSPX feed = new WPI_VictorSPX(6);
+  SupplyCurrentLimitConfiguration falconLim =new SupplyCurrentLimitConfiguration(true, 40, 50, 2);
+   
   WPI_TalonSRX Leftmaster    = new WPI_TalonSRX(Constants.Drivetrainconstants.LeftmasterID);
   WPI_TalonSRX Rightmaster   = new WPI_TalonSRX(Constants.Drivetrainconstants.RightmasterID);
   WPI_VictorSPX Leftfollower  = new WPI_VictorSPX(Constants.Drivetrainconstants.LeftfollowerID);
   WPI_VictorSPX Rightfollower = new WPI_VictorSPX(Constants.Drivetrainconstants.RightfollowerID);
   Joystick joystick = new Joystick(0);
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-unicorn");
   
   double m_quickStopAccumulator=0;
   double leftout,rightout;
+  double x,y,area;
+  double disterr,rotationerr;
+  double i =0;
   
   
   /**
@@ -44,61 +59,24 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    
-    Leftmaster.configFactoryDefault();
-    Rightmaster.configFactoryDefault();
-    Leftfollower.configFactoryDefault();
-    Rightfollower.configFactoryDefault();
-    
-    Leftmaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0,Constants.Drivetrainconstants.timeoutMs );
-    Rightmaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Constants.Drivetrainconstants.timeoutMs);
-    Leftmaster.setInverted(true);
-    Rightmaster.setInverted(false);
-    Leftfollower.setInverted(InvertType.FollowMaster);
-    Rightfollower.setInverted(InvertType.FollowMaster);
-
-    Leftfollower.follow(Leftmaster);
-    Rightfollower.follow(Rightmaster);
-/*
-    Leftmaster.configMotionCruiseVelocity(Drivetrainconstants.MaxSpeed,10);
-    Rightmaster.configMotionCruiseVelocity(Drivetrainconstants.MaxSpeed,10);
-    Leftmaster.configMotionAcceleration(Drivetrainconstants.MaxAcc, 10);
-    Rightmaster.configMotionAcceleration(Drivetrainconstants.MaxAcc,10);
-*/
-    Rightmaster.enableCurrentLimit(true);
-    Leftmaster.enableCurrentLimit(true);
-    Rightmaster.configContinuousCurrentLimit(Constants.Drivetrainconstants.MaxAmp);
-    Leftmaster.configContinuousCurrentLimit(Constants.Drivetrainconstants.MaxAmp);
-      /* 
-    Rightmaster.enableVoltageCompensation(true);
-    Leftmaster.enableVoltageCompensation(true);
-
-    Rightmaster.configVoltageCompSaturation(11.3);
-    Leftmaster.configVoltageCompSaturation(11.3);
-*/
-    Leftmaster.configAllowableClosedloopError(0, 10, 10);
-    Rightmaster.configAllowableClosedloopError(0, 10, 10);
-    
-    Leftmaster.config_kP(Drivetrainconstants.pidsolt, Drivetrainconstants.kPdrive,Drivetrainconstants.timeoutMs);
-    Rightmaster.config_kP(Drivetrainconstants.pidsolt, Drivetrainconstants.kPdrive,Drivetrainconstants.timeoutMs);
-    Leftmaster.config_kF(Drivetrainconstants.pidsolt, Drivetrainconstants.kFdrive,Drivetrainconstants.timeoutMs);
-    Rightmaster.config_kF(Drivetrainconstants.pidsolt, Drivetrainconstants.kFdrive,Drivetrainconstants.timeoutMs);
-    Leftmaster.config_kD(Drivetrainconstants.pidsolt, Drivetrainconstants.kDdrive,Drivetrainconstants.timeoutMs);
-    Rightmaster.config_kD(Drivetrainconstants.pidsolt, Drivetrainconstants.kDdrive,Drivetrainconstants.timeoutMs);
-    Leftmaster.config_kI(Drivetrainconstants.pidsolt, Drivetrainconstants.kIdrive,Drivetrainconstants.timeoutMs);
-    Rightmaster.config_kI(Drivetrainconstants.pidsolt, Drivetrainconstants.kIdrive,Drivetrainconstants.timeoutMs);
-
-    Rightmaster.configNeutralDeadband(Drivetrainconstants.deadband);
-    Leftmaster.configNeutralDeadband(Drivetrainconstants.deadband);
-
-    Leftmaster.setNeutralMode(NeutralMode.Brake);
-    Rightmaster.setNeutralMode(NeutralMode.Brake);
-    
-  }@Override
+    setmotor();
+    setflywheel();
+  }
+  @Override
   public void robotPeriodic() {
+    SmartDashboard.putData("PDP",powerDistributionPanel);
+    
     SmartDashboard.putNumber("joyraw", joystick.getRawAxis(1));
     SmartDashboard.putNumber("joysch", 0.3*joystick.getRawAxis(1)+0.7*Math.pow(joystick.getRawAxis(1),5.0));
     
+   
+    NetworkTableEntry tx = table.getEntry("tx");
+    NetworkTableEntry ty = table.getEntry("ty");
+    NetworkTableEntry ta = table.getEntry("ta");
+    x = tx.getDouble(0.0);
+    y = ty.getDouble(0.0);
+    area = ta.getDouble(0.0);
+    SmartDashboard.putNumber("X", x);
   }
 
   @Override
@@ -107,6 +85,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    flywheel.set(0.2);
    
   }
 
@@ -116,23 +95,36 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    
-    curvatureDrive(0.5*joystick.getRawAxis(1)+0.5*Math.pow(joystick.getRawAxis(1), 5),-( 0.2*joystick.getRawAxis(2)+0.2*Math.pow(joystick.getRawAxis(2), 5)), joystick.getRawButton(1));
-   // Leftmaster.set(ControlMode.PercentOutput, leftout);
-    //Rightmaster.set(ControlMode.PercentOutput, rightout);
+    SmartDashboard.putData("PDP",powerDistributionPanel);
+    if(joystick.getRawAxis(3)>0.75){
+      flywheel.set(-0.9);
+      i++;
+    }
+    else{
+      flywheel.set(0);
+      i=0;
+    }
+    if(i>200&joystick.getRawButton(3)){
+      feed.set(1);
+    }
+    else{
+      feed.set(0);
+    }
+    if(joystick.getRawButton(2)){
+      intake.set(-0.7);
+    }
+    else{
+      intake.set(0);
+    }
+    curvatureDrive(0.2*joystick.getRawAxis(1)+0.8*Math.pow(joystick.getRawAxis(1), 5),-( 0.2*joystick.getRawAxis(2)+0.2*Math.pow(joystick.getRawAxis(2), 5)), joystick.getRawButton(1));
+
     Leftmaster.set(ControlMode.Velocity,4000*leftout);
     Rightmaster.set(ControlMode.Velocity,4000*rightout);
     SmartDashboard.putNumber("left", leftout);
     SmartDashboard.putNumber("right", rightout);
-    SmartDashboard.putNumber("joyraw", joystick.getRawAxis(1));
-    SmartDashboard.putNumber("joysch", 0.3*joystick.getRawAxis(1)+0.7*Math.pow(joystick.getRawAxis(1),5.0));
-    
+     
     SmartDashboard.putNumber("LeftVel", Leftmaster.getSelectedSensorVelocity());
     SmartDashboard.putNumber("RightVel", Rightmaster.getSelectedSensorVelocity());
-
-    SmartDashboard.putNumber("Leftmaster", Leftmaster.getSelectedSensorPosition(0));
-    SmartDashboard.putNumber("Rightmaster", Rightmaster.getSelectedSensorPosition(0));
- 
   }
 
   @Override
@@ -159,14 +151,14 @@ public class Robot extends TimedRobot {
    * @param isQuickTurn If set, overrides constant-curvature turning for
    *                    turn-in-place maneuvers.
    */
-  @SuppressWarnings({"ParameterName", "PMD.CyclomaticComplexity"})
+  @SuppressWarnings({"ParameterName", "PMD.CyclomaticgitComplexity"})
   public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
 
     xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
     if(Math.abs(zRotation)<0.1){
       zRotation =0;
     }
-    zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);
+    zRotation = MathUtil.clamp(zRotation+rotationerr, -1.0, 1.0);
 
     double angularPower;
     boolean overPower;
@@ -226,5 +218,65 @@ public class Robot extends TimedRobot {
     m_rightMotor.set(rightMotorOutput * m_maxOutput * m_rightSideInvertMultiplier);
     */
 
+  }
+  public void setmotor(){
+    Leftmaster.configFactoryDefault();
+    Rightmaster.configFactoryDefault();
+    Leftfollower.configFactoryDefault();
+    Rightfollower.configFactoryDefault();
+    
+    Leftmaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0,Constants.Drivetrainconstants.timeoutMs );
+    Rightmaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Constants.Drivetrainconstants.timeoutMs);
+    Leftmaster.setInverted(true);
+    Rightmaster.setInverted(false);
+
+    Rightfollower.setInverted(InvertType.FollowMaster);
+    
+    Leftfollower.setInverted(InvertType.FollowMaster);
+
+    Leftfollower.follow(Leftmaster);
+    Rightfollower.follow(Rightmaster);
+
+
+
+    Leftmaster.configMotionCruiseVelocity(Drivetrainconstants.MaxSpeed,10);
+    Rightmaster.configMotionCruiseVelocity(Drivetrainconstants.MaxSpeed,10);
+    Leftmaster.configMotionAcceleration(Drivetrainconstants.MaxAcc, 10);
+    Rightmaster.configMotionAcceleration(Drivetrainconstants.MaxAcc,10);
+
+    Rightmaster.configSupplyCurrentLimit(falconLim);
+    Leftmaster.configSupplyCurrentLimit(falconLim);
+   // Rightfollower.configSupplyCurrentLimit(falconLim);
+    //Leftfollower.configSupplyCurrentLimit(falconLim);
+    Rightmaster.enableVoltageCompensation(true);
+    Leftmaster.enableVoltageCompensation(true);
+
+    Rightmaster.configVoltageCompSaturation(11.3);
+    Leftmaster.configVoltageCompSaturation(11.3);
+
+    Leftmaster.configAllowableClosedloopError(0, 10, 10);
+    Rightmaster.configAllowableClosedloopError(0, 10, 10);
+    
+    Leftmaster.config_kP(Drivetrainconstants.pidsolt, Drivetrainconstants.kPdrive,Drivetrainconstants.timeoutMs);
+    Rightmaster.config_kP(Drivetrainconstants.pidsolt, Drivetrainconstants.kPdrive,Drivetrainconstants.timeoutMs);
+    Leftmaster.config_kF(Drivetrainconstants.pidsolt, Drivetrainconstants.kFdrive,Drivetrainconstants.timeoutMs);
+    Rightmaster.config_kF(Drivetrainconstants.pidsolt, Drivetrainconstants.kFdrive,Drivetrainconstants.timeoutMs);
+    Leftmaster.config_kD(Drivetrainconstants.pidsolt, Drivetrainconstants.kDdrive,Drivetrainconstants.timeoutMs);
+    Rightmaster.config_kD(Drivetrainconstants.pidsolt, Drivetrainconstants.kDdrive,Drivetrainconstants.timeoutMs);
+    Leftmaster.config_kI(Drivetrainconstants.pidsolt, Drivetrainconstants.kIdrive,Drivetrainconstants.timeoutMs);
+    Rightmaster.config_kI(Drivetrainconstants.pidsolt, Drivetrainconstants.kIdrive,Drivetrainconstants.timeoutMs);
+    Rightmaster.configNeutralDeadband(Drivetrainconstants.deadband);
+    Leftmaster.configNeutralDeadband(Drivetrainconstants.deadband);
+
+    Leftmaster.setNeutralMode(NeutralMode.Coast);
+    Rightmaster.setNeutralMode(NeutralMode.Coast);
+  }
+  public void setflywheel(){
+    flywheel.configFactoryDefault();
+    flywheel.enableCurrentLimit(true);
+    flywheel.configContinuousCurrentLimit(30);
+    flywheel.configPeakCurrentDuration(10);
+    flywheel.configPeakCurrentLimit(40);
+    
   }
 }

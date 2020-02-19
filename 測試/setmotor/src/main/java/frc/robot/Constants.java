@@ -33,7 +33,7 @@ public final class Constants {
         public static final double kIdrive = 0.00;
         public static final double kDdrive = 0.00;
 
-        public static final double kFdrive = 0.2;
+        public static final double kFdrive = 0.25;
         public static final int MaxSpeed = 5000;
         public static final int MaxAcc = 300;
         public static final int MaxAmp = 40;

@@ -142,6 +142,9 @@ public class Robot extends TimedRobot {
       if(area>0){
       rotationerr = limelightconstants.kP*x;
      }
+     else{
+       rotationerr =0; 
+     }
     }
     else{
       i=0;
