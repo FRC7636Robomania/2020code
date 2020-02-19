@@ -38,7 +38,11 @@ public final class Constants {
         public static final int intakearmfolID = 4;
         public static final int intakeID = 5;
         public static final int wideID = 6;
-        
+        public static final double rotationPerPulse = 2048;
+        public static final double kP = 0.01;
+        public static final double kF = 0.04;
+        public static final double k = 0.01;
+
 
     }
 }

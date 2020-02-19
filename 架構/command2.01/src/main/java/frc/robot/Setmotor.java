@@ -57,4 +57,8 @@ public class Setmotor {
     motor.enableVoltageCompensation(true);
     motor.configVoltageCompSaturation(11.3);
   
-}}
+}
+public void setmotor(WPI_VictorSPX motor,InvertType invertType,int time){
+    motor.set(0);
+}
+}
