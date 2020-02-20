@@ -29,6 +29,8 @@ public final class Constants {
         public static final double kF = 0.04;
         public static final double k = 0.01;
         public static final double Ramptime = 1.5;
+        public static final int falconCPR =2048; 
+        
 
     }
     public static class PowCon{
@@ -42,6 +44,8 @@ public final class Constants {
         public static final double kP = 0.01;
         public static final double kF = 0.04;
         public static final double k = 0.01;
+        public static final int falconCPR =2048;
+        public static final int trashCPR =7;
 
 
     }
