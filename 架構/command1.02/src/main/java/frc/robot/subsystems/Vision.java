@@ -7,46 +7,18 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.VisCon;
-
 
 public class Vision extends SubsystemBase {
-
   /**
    * Creates a new Vision.
    */
-  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-unicorn");
-  private double x,y,area,dist;
   public Vision() {
-    
 
-  }
-  public double getx(){
-    return x;
-  }
-
-  public double getDist(){
-    dist = 
-    return dist;
-  }
-  public double getarea(){
-    return area;
   }
 
   @Override
   public void periodic() {
-    
-    NetworkTableEntry tx = table.getEntry("tx");
-    NetworkTableEntry ty = table.getEntry("ty");
-    NetworkTableEntry ta = table.getEntry("ta");
-    x =  tx.getDouble(0.0);
-    y = ty.getDouble(0.0);
-    area = ta.getDouble(0.0);
-
     // This method will be called once per scheduler run
   }
 }

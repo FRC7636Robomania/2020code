@@ -21,6 +21,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.*;
 
@@ -35,14 +36,14 @@ import com.ctre.phoenix.motorcontrol.can.*;
 public class Robot extends TimedRobot {
   private final PowerDistributionPanel powerDistributionPanel= new PowerDistributionPanel(0);
   SupplyCurrentLimitConfiguration falconLim =new SupplyCurrentLimitConfiguration(true, 40, 50, 2);
-   
+  
   WPI_TalonFX Leftmaster    = new WPI_TalonFX(Constants.Drivetrainconstants.LeftmasterID);
   WPI_TalonFX Rightmaster   = new WPI_TalonFX(Constants.Drivetrainconstants.RightmasterID);
   WPI_TalonFX Leftfollower  = new WPI_TalonFX(Constants.Drivetrainconstants.LeftfollowerID);
   WPI_TalonFX Rightfollower = new WPI_TalonFX(Constants.Drivetrainconstants.RightfollowerID);
   Joystick joystick = new Joystick(0);
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-unicorn");
-  
+  TalonFXConfiguration talonFxConfiguration = new TalonFXConfiguration();
   double m_quickStopAccumulator=0;
   double leftout,rightout;
   double x,y,area,kT;
@@ -57,7 +58,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     setmotor();
-    
+
     
     
   }@Override
@@ -89,10 +90,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    if(!joystick.getRawButton(1)){kT=0.5;}
+    else{kT=0.15;}
     curvatureDrive(0.2*joystick.getRawAxis(1)+0.8*Math.pow(joystick.getRawAxis(1), 5),-( kT*joystick.getRawAxis(2)), joystick.getRawButton(1));
     SmartDashboard.putData("PDP",powerDistributionPanel);
-    Leftmaster.set(ControlMode.Velocity,4000*leftout);
-    Rightmaster.set(ControlMode.Velocity,4000*rightout);
+    Leftmaster.set(ControlMode.Velocity,15000*leftout);
+    Rightmaster.set(ControlMode.Velocity,15000*rightout);
     SmartDashboard.putNumber("left", leftout);
     SmartDashboard.putNumber("right", rightout);
     SmartDashboard.putNumber("LeftVel", Leftmaster.getSelectedSensorVelocity());
@@ -186,11 +189,6 @@ public class Robot extends TimedRobot {
 
     leftout=  leftMotorOutput;
     rightout = rightMotorOutput;
-    /*
-    m_leftMotor.set(leftMotorOutput * m_maxOutput);
-    m_rightMotor.set(rightMotorOutput * m_maxOutput * m_rightSideInvertMultiplier);
-    */
-
   }
   public void setmotor(){
     Leftmaster.configFactoryDefault();
@@ -243,5 +241,27 @@ public class Robot extends TimedRobot {
 
     Leftmaster.setNeutralMode(NeutralMode.Coast);
     Rightmaster.setNeutralMode(NeutralMode.Coast);
+  }
+  public void setmotor(WPI_TalonFX motor,SupplyCurrentLimitConfiguration supplyCurrentLimitConfiguration,double KP,double KF,InvertType invertType,int slotIdx,double Ramp,int time){
+    motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    
+    motor.setSelectedSensorPosition(0);
+    motor.configFactoryDefault();
+    motor.configAllSettings(talonFxConfiguration);
+    motor.configClosedloopRamp(2);
+    motor.configAllowableClosedloopError(slotIdx, 10);
+    motor.configSupplyCurrentLimit(supplyCurrentLimitConfiguration);
+    motor.setInverted(invertType);
+    motor.config_kP(slotIdx, KP);
+    motor.config_kF(slotIdx, KF);
+    motor.enableVoltageCompensation(true);
+    motor.configVoltageCompSaturation(11.3);
+    
+  }
+  public void setmotor(WPI_TalonSRX motor,SupplyCurrentLimitConfiguration supplyCurrentLimitConfiguration,double KP,double KF,InvertType inverttype){
+
+  }
+  public void setmotor(WPI_VictorSPX motor,double KP,double KF,InvertType inverttype){
+
   }
 }

@@ -35,11 +35,11 @@ import com.ctre.phoenix.motorcontrol.can.*;
 public class Robot extends TimedRobot {
   private final PowerDistributionPanel powerDistributionPanel= new PowerDistributionPanel(0);
   WPI_TalonSRX flywheel = new WPI_TalonSRX(10);
-  WPI_VictorSPX intake = new WPI_VictorSPX(1);
+  WPI_VictorSPX Leftmaster = new WPI_VictorSPX(1);
   WPI_VictorSPX feed = new WPI_VictorSPX(6);
   SupplyCurrentLimitConfiguration falconLim =new SupplyCurrentLimitConfiguration(true, 40, 50, 2);
    
-  WPI_TalonSRX Leftmaster    = new WPI_TalonSRX(Constants.Drivetrainconstants.LeftmasterID);
+  WPI_TalonSRX intake    = new WPI_TalonSRX(Constants.Drivetrainconstants.LeftmasterID);
   WPI_TalonSRX Rightmaster   = new WPI_TalonSRX(Constants.Drivetrainconstants.RightmasterID);
   WPI_VictorSPX Leftfollower  = new WPI_VictorSPX(Constants.Drivetrainconstants.LeftfollowerID);
   WPI_VictorSPX Rightfollower = new WPI_VictorSPX(Constants.Drivetrainconstants.RightfollowerID);
@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
       feed.set(0);
     }
     if(joystick.getRawButton(2)){
-      intake.set(-0.7);
+      intake.set(-0.9);
     }
     else{
       intake.set(0);
@@ -230,6 +230,8 @@ public class Robot extends TimedRobot {
     Leftmaster.setInverted(true);
     Rightmaster.setInverted(false);
 
+    Leftfollower.follow(Leftmaster);
+    Rightfollower.follow(Rightmaster);
     Rightfollower.setInverted(InvertType.FollowMaster);
     
     Leftfollower.setInverted(InvertType.FollowMaster);
@@ -245,7 +247,7 @@ public class Robot extends TimedRobot {
     Rightmaster.configMotionAcceleration(Drivetrainconstants.MaxAcc,10);
 
     Rightmaster.configSupplyCurrentLimit(falconLim);
-    Leftmaster.configSupplyCurrentLimit(falconLim);
+    //Leftmaster.configSupplyCurrentLimit(falconLim);
    // Rightfollower.configSupplyCurrentLimit(falconLim);
     //Leftfollower.configSupplyCurrentLimit(falconLim);
     Rightmaster.enableVoltageCompensation(true);
@@ -277,6 +279,10 @@ public class Robot extends TimedRobot {
     flywheel.configContinuousCurrentLimit(30);
     flywheel.configPeakCurrentDuration(10);
     flywheel.configPeakCurrentLimit(40);
+    intake.enableCurrentLimit(true);
+    intake.configContinuousCurrentLimit(30);
+    intake.configPeakCurrentDuration(10);
+    intake.configPeakCurrentLimit(40);
     
   }
 }

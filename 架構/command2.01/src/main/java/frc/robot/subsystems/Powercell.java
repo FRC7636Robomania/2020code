@@ -42,6 +42,8 @@ public class Powercell extends SubsystemBase {
     setmotor.setmotor(wide,InvertType.None,10);
     flywheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor,0,10);
     turret.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,0,10);
+    turret.configForwardSoftLimitEnable(true);
+    turret.configReverseSoftLimitEnable(true);
     turret.configForwardSoftLimitThreshold(11*90,10);
     turret.configReverseSoftLimitThreshold(-11*90,10);
 
@@ -57,9 +59,12 @@ public class Powercell extends SubsystemBase {
   }
   public void resetturret(){
     turret.setSelectedSensorPosition(0);
+  }
+  public void turretaim(double x){
+    turret.set(ControlMode.PercentOutput,PowCon.turretkP*x);
 
   }
-
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
