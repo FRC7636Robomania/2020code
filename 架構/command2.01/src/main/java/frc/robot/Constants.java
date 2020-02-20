@@ -51,7 +51,7 @@ public final class Constants {
 
     }
     public static class VisCon{
-    public static final double targetheight = 249;
+    public static final double targetheight = 205;
     public static final double limeheight = 50;
     public static final double limeangle = 35;
     }
