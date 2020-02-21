@@ -1,6 +1,4 @@
 
-
-
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -10,6 +8,7 @@
 
 package frc.robot.commands.Auto;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.Aim;
@@ -32,7 +31,8 @@ public class Easyauto extends SequentialCommandGroup {
     super(
     new Aim(powercell, vision, drivetrain),
     new Shoot(powercell),
-    new StartEndCommand(()->drivetrain.drivedist(3), ()->drivetrain.drivedist(-2),drivetrain),
+    new InstantCommand(()->powercell.intake(), powercell),
+    new StartEndCommand(()->drivetrain.drivedist(3), ()->drivetrain.drivedist(-2),drivetrain).withInterrupt(() -> drivetrain.drivedistend()),
     new Aim(powercell, vision, drivetrain),
     new Shoot(powercell)
     );

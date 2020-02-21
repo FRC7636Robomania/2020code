@@ -10,6 +10,7 @@
 
 package frc.robot.commands.Auto;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.commands.Aim;
@@ -32,6 +33,7 @@ public class Easyauto1 extends SequentialCommandGroup {
     super(
     new Aim(powercell, vision, drivetrain),
     new Shoot(powercell),
+    new InstantCommand(()->powercell.intake(), powercell),
     new StartEndCommand(()->drivetrain.drivedist(3), ()->drivetrain.drivedist(-2),drivetrain).withInterrupt(() -> drivetrain.drivedistend()),
     new Aim(powercell, vision, drivetrain),
     new Shoot(powercell)
