@@ -20,15 +20,15 @@ import frc.robot.Constants.DrCon;
 import frc.robot.Setmotor;
 
 public class Drivetrain extends SubsystemBase {
-  SupplyCurrentLimitConfiguration supplyCurrentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, 40, 50, 1);
-  Setmotor setmotor = new Setmotor();
-  WPI_TalonFX leftmas = new WPI_TalonFX(DrCon.LeftmasterID);
-  WPI_TalonFX leftfol= new WPI_TalonFX(DrCon.LeftfollowerID);
-  WPI_TalonFX rightmas = new WPI_TalonFX(DrCon.RightmasterID);
-  WPI_TalonFX rightfol = new WPI_TalonFX(DrCon.RightfollowerID);
-  AHRS ahrs = new AHRS(SPI.Port.kMXP);
-  double disterr;
-  double m_quickStopAccumulator = 0,leftout=0,rightout=0;
+  private SupplyCurrentLimitConfiguration supplyCurrentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, 40, 50, 1);
+  private Setmotor setmotor = new Setmotor();
+  private WPI_TalonFX leftmas = new WPI_TalonFX(DrCon.LeftmasterID);
+  private WPI_TalonFX leftfol= new WPI_TalonFX(DrCon.LeftfollowerID);
+  private WPI_TalonFX rightmas = new WPI_TalonFX(DrCon.RightmasterID);
+  private WPI_TalonFX rightfol = new WPI_TalonFX(DrCon.RightfollowerID);
+// private AHRS ahrs = new AHRS(SPI.Port.kMXP);
+  private double disterr;
+  private double m_quickStopAccumulator = 0,leftout=0,rightout=0;
 
   /**
    * Creates a new Drivetrain.
@@ -39,6 +39,12 @@ public class Drivetrain extends SubsystemBase {
     setmotor.setmotor(rightmas, supplyCurrentLimitConfiguration, DrCon.kP, DrCon.kF, InvertType.InvertMotorOutput, DrCon.pidsolt, DrCon.Ramptime,DrCon.timeoutMs);
     setmotor.setmotorfol(leftfol, supplyCurrentLimitConfiguration, InvertType.FollowMaster,DrCon.timeoutMs);
     setmotor.setmotorfol(rightfol, supplyCurrentLimitConfiguration, InvertType.FollowMaster,DrCon.timeoutMs);
+    leftfol.follow(leftmas);
+    rightfol.follow(rightmas);
+  }
+  public void drivedist(double dist){
+    leftmas.set(ControlMode.MotionMagic, dist*DrCon.enoderunit);
+
   }
   public void distaim(double distpoint){
     disterr = distpoint;
@@ -46,7 +52,7 @@ public class Drivetrain extends SubsystemBase {
   }
   public void curvaturedrive(double xSpeed,double zRotation,boolean isQuickTurn){
     
-    curvatureDrive(xSpeed+disterr, zRotation, isQuickTurn);
+    curvatureDrive(xSpeed, zRotation, isQuickTurn);
     rightmas.set(ControlMode.PercentOutput, rightout);
     leftmas.set(ControlMode.PercentOutput,leftout);
   }

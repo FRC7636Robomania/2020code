@@ -8,27 +8,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Powercell;
-import frc.robot.subsystems.Vision;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.GyroBase;
 
-public class Aim extends CommandBase {
-  private Powercell powercellsub;
-  private Vision visionsub;
-  private Drivetrain drivetrainsub;
-  double x;
+public class SmartDashboard extends CommandBase {
   /**
-   * Creates a new Aim.
+   * Creates a new SmartDashboard.
    */
-  public Aim(Powercell powercell,Vision vision,Drivetrain drivetrain) {
-    powercellsub = powercell;
-    visionsub = vision;
-    drivetrainsub =drivetrain;
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(powercellsub);
-    addRequirements(visionsub);
-    addRequirements(drivetrainsub);
+  public SmartDashboard() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -40,25 +27,16 @@ public class Aim extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-  //  drivetrainsub.distaim(visionsub.getDisterr());
-    x=visionsub.getx();
-    powercellsub.turretaim(x);
   }
-  
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-   powercellsub.turretaim(0);
-   // drivetrainsub.distaim(0);
-
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-  
-    return powercellsub.turretfinish();
+    return false;
   }
 }

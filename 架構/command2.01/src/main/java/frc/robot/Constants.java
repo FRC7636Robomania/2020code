@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
+import java.lang.Math;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -31,32 +32,53 @@ public final class Constants {
         public static final double Ramptime = 1.5;
         public static final int falconCPR =2048; 
         
+        public static final double enoderunit = 2048/(0.1524*Math.PI);
 
     }
     public static class PowCon{
-        public static final int flywheelID =22;
+        public static final int flywheelID =4;
         public static final int conveyorID = 2;
-        public static final int intakearmmasID = 3;
-        public static final int intakearmfolID = 4;
-        public static final int intakeID = 5;
-        public static final int wideID = 6;
+        public static final int intakearmmasID = 0;
+        public static final int turretID = 6;
+        public static final int intakeID = 3;
+        public static final int wideID = 1;
         public static final double rotationPerPulse = 2048;
         public static final double kP = 0.01;
         public static final double turretkP = 0.01;
         public static final double kF = 0.04;
         public static final double k = 0.01;
         public static final int falconCPR =2048;
-        public static final int trashCPR =7;
+        public static final int turretCPR =7;
+        public static final double turretkF = 0.263;
+        public static final double turretconfigKP = 0.05;
+
 
 
     }
     public static class VisCon{
-    public static final double targetheight = 205;
-    public static final double limeheight = 50;
-    public static final double limeangle = 35;
-    public static final double targetDist = 4;
-    public static final double threshold = 0.3;
+        public static final double targetheight = 205;
+        public static final double limeheight = 50;
+        public static final double limeangle = 42;
+        public static final double targetDist = 4;
+        public static final double threshold = 0.3;
     
     
     }
+    public static class Button{
+        public static final int shoot = 1;
+
+        public static final int aim = 2;
+        public static final int turrethoming=4;
+        //test
+        public static final int turretleft = 5;
+        public static final int turretright = 6;
+        //
+        public static final int intake = 2;
+
+        public static final int armdown = 8;
+        public static final int armup = 7;
+        public static final int wide = 3;
+    }
+
+
 }
