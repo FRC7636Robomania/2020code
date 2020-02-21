@@ -49,6 +49,9 @@ public class Powercell extends SubsystemBase {
     resetturret();
 
   }
+  public double getflywheelspeed(){
+    return flywheel.getSelectedSensorVelocity(0);
+  }
   public void flywheelspinup(){
 
     flywheel.set(ControlMode.Velocity, 20000);
@@ -64,7 +67,13 @@ public class Powercell extends SubsystemBase {
   }
   public void turretaim(double x){
     turret.set(ControlMode.PercentOutput,PowCon.turretkP*x);
+    //turret.set(ControlMode.MotionMagic,11*x);
 
+  }
+  public void conveyor(){
+    if(getflywheelspeed()>18000){
+      conveyor.set(ControlMode.PercentOutput,10);
+    }
   }
   
   @Override
