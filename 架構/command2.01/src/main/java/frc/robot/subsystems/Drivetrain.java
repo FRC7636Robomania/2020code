@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -27,7 +28,7 @@ public class Drivetrain extends SubsystemBase {
   private WPI_TalonFX rightmas = new WPI_TalonFX(DrCon.RightmasterID);
   private WPI_TalonFX rightfol = new WPI_TalonFX(DrCon.RightfollowerID);
 // private AHRS ahrs = new AHRS(SPI.Port.kMXP);
-  private double disterr;
+  private double disterr,disttar;
   private double m_quickStopAccumulator = 0,leftout=0,rightout=0;
 
   /**
@@ -35,6 +36,10 @@ public class Drivetrain extends SubsystemBase {
    */
   public Drivetrain() {
     
+    leftmas.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+    rightmas.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+    leftmas.setSelectedSensorPosition(0,0, 10);
+    rightmas.setSelectedSensorPosition(0,0, 10);
     setmotor.setmotor(leftmas, supplyCurrentLimitConfiguration, DrCon.kP, DrCon.kF, InvertType.None, DrCon.pidsolt, DrCon.Ramptime, DrCon.timeoutMs);
     setmotor.setmotor(rightmas, supplyCurrentLimitConfiguration, DrCon.kP, DrCon.kF, InvertType.InvertMotorOutput, DrCon.pidsolt, DrCon.Ramptime,DrCon.timeoutMs);
     setmotor.setmotorfol(leftfol, supplyCurrentLimitConfiguration, InvertType.FollowMaster,DrCon.timeoutMs);
@@ -44,7 +49,11 @@ public class Drivetrain extends SubsystemBase {
   }
   public void drivedist(double dist){
     leftmas.set(ControlMode.MotionMagic, dist*DrCon.enoderunit);
-
+    rightmas.set(ControlMode.MotionMagic, dist*DrCon.enoderunit);
+    disttar = dist*DrCon.enoderunit;
+  }
+  public boolean drivedistend(){
+    return Math.abs(disttar-leftmas.getSelectedSensorVelocity(0))<500;
   }
   public void distaim(double distpoint){
     disterr = distpoint;

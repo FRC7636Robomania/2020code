@@ -21,6 +21,8 @@ import frc.robot.commands.Aim;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.Auto.Easyauto;
+import frc.robot.commands.Auto.Easyauto1;
+import frc.robot.commands.Auto.Easyauto2;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Powercell;
@@ -42,6 +44,8 @@ public class RobotContainer {
   private final ExampleCommand   m_autoCommand      = new ExampleCommand(m_exampleSubsystem);
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
   private final Easyauto m_easyauto = new Easyauto(m_powercell,m_drivetrain,m_vision);
+  private final Easyauto1 m_easyauto1 = new Easyauto1(m_powercell,m_drivetrain,m_vision);
+  private final Easyauto2 m_easyauto2 = new Easyauto2(m_powercell,m_drivetrain,m_vision);
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -50,7 +54,10 @@ public class RobotContainer {
     configureButtonBindings();
     m_drivetrain.setDefaultCommand(new RunCommand(()->
     m_drivetrain.curvaturedrive(joystick.getY(), joystick.getZ(),joystick.getRawButton(1)),m_drivetrain));
-    m_chooser.addOption("Simple Auto1", m_easyauto);
+    m_chooser.addOption("Simple AutoUP", m_easyauto);
+    m_chooser.addOption("Simple AutoMID", m_easyauto1);
+    m_chooser.addOption("Simple AutoDOWN", m_easyauto2);
+
     // Put the chooser on the dashboard
     Shuffleboard.getTab("Autonomous").add(m_chooser);
   }

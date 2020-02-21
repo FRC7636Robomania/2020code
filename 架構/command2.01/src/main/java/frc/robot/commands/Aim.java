@@ -7,10 +7,12 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Powercell;
 import frc.robot.subsystems.Vision;
+
 
 public class Aim extends CommandBase {
   private Powercell powercellsub;
@@ -44,6 +46,8 @@ public class Aim extends CommandBase {
   //  drivetrainsub.distaim(visionsub.getDisterr());
     x=visionsub.getx();
     powercellsub.turretaim(x);
+    
+   SmartDashboard.putString("瞄準狀況", "瞄準中-誤差角為"+x);
   }
   
 
@@ -52,7 +56,8 @@ public class Aim extends CommandBase {
   public void end(boolean interrupted) {
    powercellsub.turretaim(0);
    // drivetrainsub.distaim(0);
-
+   SmartDashboard.putString("瞄準狀況", "瞄準結束");
+  
   }
 
   // Returns true when the command should end.
