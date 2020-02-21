@@ -31,7 +31,7 @@ public final class Constants {
         public static final double k = 0.01;
         public static final double Ramptime = 1.5;
         public static final int falconCPR =2048; 
-        
+        public static final int maxspeed=10000,maxacc=5000;
         public static final double enoderunit = 2048/(0.1524*Math.PI);
 
     }
@@ -49,6 +49,7 @@ public final class Constants {
         public static final double k = 0.01;
         public static final int falconCPR =2048;
         public static final int turretCPR =7;
+        public static final int maxspeed=2500,maxacc=1500;
         public static final double turretkF = 0.263;
         public static final double turretconfigKP = 0.05;
 

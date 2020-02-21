@@ -45,8 +45,10 @@ public class Powercell extends SubsystemBase {
     turret.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,0,10);
     turret.configForwardSoftLimitEnable(true);
     turret.configReverseSoftLimitEnable(true);
-    turret.configForwardSoftLimitThreshold(11*30*4,10);
-    turret.configReverseSoftLimitThreshold(-11*30*4,10);
+    turret.configMotionAcceleration(PowCon.maxacc, 10);
+		turret.configMotionCruiseVelocity(PowCon.maxspeed,10);
+    turret.configForwardSoftLimitThreshold(2500,10);
+    turret.configReverseSoftLimitThreshold(-2500,10);
     resetturret();
     flywheelstop();
     intakestop();
@@ -66,7 +68,7 @@ public class Powercell extends SubsystemBase {
   }
   public void turretaim(double targetangle){
    //turret.set(ControlMode.PercentOutput,PowCon.turretkP*targetangle);
-    turret.set(ControlMode.MotionMagic,11*4*targetangle+turret.getSelectedSensorPosition(0));
+    turret.set(ControlMode.MotionMagic,4000/90*targetangle+turret.getSelectedSensorPosition(0));
     target = targetangle;
   }
   public boolean turretfinish(){
