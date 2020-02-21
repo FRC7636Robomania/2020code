@@ -34,6 +34,14 @@ public class Vision extends SubsystemBase {
     +y));
     return dist;
   }
+  public double getDisterr(){
+    double disterr;
+    disterr = VisCon.targetDist - getDist();
+    if(Math.abs(disterr)<VisCon.threshold){
+      disterr =0;
+    }
+  return disterr;
+  }
   public double getarea(){
     return area;
   }

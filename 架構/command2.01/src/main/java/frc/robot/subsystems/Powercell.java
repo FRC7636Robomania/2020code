@@ -46,6 +46,7 @@ public class Powercell extends SubsystemBase {
     turret.configReverseSoftLimitEnable(true);
     turret.configForwardSoftLimitThreshold(11*90,10);
     turret.configReverseSoftLimitThreshold(-11*90,10);
+    resetturret();
 
   }
   public void flywheelspinup(){
@@ -55,6 +56,7 @@ public class Powercell extends SubsystemBase {
   
   public void flywheelstop(){
     
+   
     flywheel.set(ControlMode.Velocity, 0);
   }
   public void resetturret(){

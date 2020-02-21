@@ -54,5 +54,9 @@ public final class Constants {
     public static final double targetheight = 205;
     public static final double limeheight = 50;
     public static final double limeangle = 35;
+    public static final double targetDist = 4;
+    public static final double threshold = 0.3;
+    
+    
     }
 }

@@ -27,6 +27,7 @@ public class Drivetrain extends SubsystemBase {
   WPI_TalonFX rightmas = new WPI_TalonFX(DrCon.RightmasterID);
   WPI_TalonFX rightfol = new WPI_TalonFX(DrCon.RightfollowerID);
   AHRS ahrs = new AHRS(SPI.Port.kMXP);
+  double disterr;
   double m_quickStopAccumulator = 0,leftout=0,rightout=0;
 
   /**
@@ -39,9 +40,13 @@ public class Drivetrain extends SubsystemBase {
     setmotor.setmotorfol(leftfol, supplyCurrentLimitConfiguration, InvertType.FollowMaster,DrCon.timeoutMs);
     setmotor.setmotorfol(rightfol, supplyCurrentLimitConfiguration, InvertType.FollowMaster,DrCon.timeoutMs);
   }
+  public void distaim(double distpoint){
+    disterr = distpoint;
+
+  }
   public void curvaturedrive(double xSpeed,double zRotation,boolean isQuickTurn){
     
-    curvatureDrive(xSpeed, zRotation, isQuickTurn);
+    curvatureDrive(xSpeed+disterr, zRotation, isQuickTurn);
     rightmas.set(ControlMode.PercentOutput, rightout);
     leftmas.set(ControlMode.PercentOutput,leftout);
   }
