@@ -30,9 +30,7 @@ public class Shoot extends CommandBase {
   @Override
   public void execute() {
     powercellsub.flywheelspinup();
-    
-    
-    
+    powercellsub.conveyor();
   }
 
   // Called once the command ends or is interrupted.

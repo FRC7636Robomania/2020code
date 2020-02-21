@@ -30,8 +30,8 @@ public class Vision extends SubsystemBase {
   }
 
   public double getDist(){
-    dist = (VisCon.targetheight-VisCon.limeheight)/Math.tan(Math.toRadians(VisCon.limeangle
-    +y));
+    dist 
+    = (VisCon.targetheight-VisCon.limeheight)/Math.tan(Math.toRadians(VisCon.limeangle+y));
     return dist;
   }
   public double getDisterr(){
@@ -40,7 +40,7 @@ public class Vision extends SubsystemBase {
     if(Math.abs(disterr)<VisCon.threshold){
       disterr =0;
     }
-  return disterr;
+    return disterr;
   }
   public double getarea(){
     return area;
