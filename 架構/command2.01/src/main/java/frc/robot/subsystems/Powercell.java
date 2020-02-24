@@ -23,7 +23,7 @@ import frc.robot.Setmotor;
 
 public class Powercell extends SubsystemBase {
   private SupplyCurrentLimitConfiguration supplyCurrentLimitConfiguration = new SupplyCurrentLimitConfiguration(true, 40, 50, 1);
-  private TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
+ // private TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
   private Setmotor setmotor = new Setmotor();
   private WPI_TalonFX flywheel = new WPI_TalonFX(PowCon.flywheelID);
   private WPI_TalonSRX turret = new WPI_TalonSRX(PowCon.turretID);
@@ -31,7 +31,7 @@ public class Powercell extends SubsystemBase {
   private WPI_VictorSPX intake = new WPI_VictorSPX(PowCon.intakeID);
   private WPI_VictorSPX armmas = new WPI_VictorSPX(PowCon.intakearmmasID);
   private WPI_VictorSPX wide = new WPI_VictorSPX(PowCon.wideID);
-  private  double target; 
+  private double target; 
   /**
    * Creates a new Powercell.
    */
@@ -41,8 +41,14 @@ public class Powercell extends SubsystemBase {
     setmotor.setmotor(intake,InvertType.None,10);
     setmotor.setmotor(wide,InvertType.None,10);
     setmotor.setmotor(turret, supplyCurrentLimitConfiguration, PowCon.turretconfigKP, PowCon.turretkF, InvertType.None, 0, 1, 10);
+
     flywheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor,0,10);
+
     turret.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder,0,10);
+    turret.config_kF(0, PowCon.turretkF);
+    turret.config_kP(0, PowCon.turretkP);
+    turret.config_kI(0, 0);
+    turret.config_kD(0, 0);
     turret.configForwardSoftLimitEnable(true);
     turret.configReverseSoftLimitEnable(true);
     turret.configMotionAcceleration(PowCon.maxacc, 10);
@@ -57,34 +63,39 @@ public class Powercell extends SubsystemBase {
     return flywheel.getSelectedSensorVelocity(0);
   }
   public void flywheelspinup(){
-    flywheel.set(ControlMode.Velocity, 18000);
+    flywheel.set(ControlMode.PercentOutput, 1);
   }
   
   public void flywheelstop(){
-    flywheel.set(ControlMode.Velocity, 0);
+    flywheel.set(ControlMode.PercentOutput, 0);
   }
   public void resetturret(){
     turret.setSelectedSensorPosition(0);
   }
   public void turretaim(double targetangle){
-   //turret.set(ControlMode.PercentOutput,PowCon.turretkP*targetangle);
-    turret.set(ControlMode.MotionMagic,4000/90*targetangle+turret.getSelectedSensorPosition(0));
-    target = targetangle;
+   //turret.set(ControlMode.PercentOutput,-0.1*targetangle);
+  turret.set(ControlMode.MotionMagic,-4000/90*targetangle+turret.getSelectedSensorPosition(0));
+  SmartDashboard.putNumber("TAR", -4000/90*targetangle+turret.getSelectedSensorPosition(0));
+  SmartDashboard.putNumber("Posit",turret.getSelectedSensorPosition(0));
+  SmartDashboard.putNumber("ERR", turret.getClosedLoopError(0));
+  target = targetangle;
   }
   public boolean turretfinish(){
-
-    return target<2;
+    return false;
+    //return target<2;
   }
 
 
   public void conveyor(){
-    if(getflywheelspeed()>17500){
       conveyor.set(ControlMode.PercentOutput,0.5);
     }
-  }
+    public void conveyorstop(){
+      conveyor.set(ControlMode.PercentOutput,0.0);
+    }
+  
 
   public void widein(){
-    wide.set(ControlMode.PercentOutput, 0.5);
+    wide.set(ControlMode.PercentOutput, -0.5);
   }
   public void widestop(){
     wide.set(ControlMode.PercentOutput, 0);
@@ -114,7 +125,7 @@ public class Powercell extends SubsystemBase {
     turret.set(ControlMode.PercentOutput,0.5);
   }
   public void turretright() {
-    turret.set(ControlMode.PercentOutput,-0.5);
+   turret.set(ControlMode.PercentOutput,-0.5);
   }
   public  void turretstop() {
     turret.set(ControlMode.PercentOutput, 0.0);

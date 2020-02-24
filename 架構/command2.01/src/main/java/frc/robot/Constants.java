@@ -45,13 +45,13 @@ public final class Constants {
         public static final double rotationPerPulse = 2048;
         public static final double kP = 0.01;
         public static final double turretkP = 0.01;
-        public static final double kF = 0.04;
+        public static final double kF = 0.25;
         public static final double k = 0.01;
         public static final int falconCPR =2048;
         public static final int turretCPR =7;
         public static final int maxspeed=2500,maxacc=1500;
-        public static final double turretkF = 0.263;
-        public static final double turretconfigKP = 0.05;
+        public static final double turretkF = 30;
+        public static final double turretconfigKP = 6;
 
 
 

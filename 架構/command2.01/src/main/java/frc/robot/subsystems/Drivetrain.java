@@ -28,7 +28,7 @@ public class Drivetrain extends SubsystemBase {
   private WPI_TalonFX rightmas = new WPI_TalonFX(DrCon.RightmasterID);
   private WPI_TalonFX rightfol = new WPI_TalonFX(DrCon.RightfollowerID);
 // private AHRS ahrs = new AHRS(SPI.Port.kMXP);
-  private double disterr,disttar;
+  private double disterr,disttar,a=0.1,i=0;
   private double m_quickStopAccumulator = 0,leftout=0,rightout=0;
 
   /**
@@ -47,10 +47,18 @@ public class Drivetrain extends SubsystemBase {
     leftfol.follow(leftmas);
     rightfol.follow(rightmas);
   }
-  public void drivedist(double dist){
-    leftmas.set(ControlMode.MotionMagic, dist*DrCon.enoderunit);
-    rightmas.set(ControlMode.MotionMagic, dist*DrCon.enoderunit);
-    disttar = dist*DrCon.enoderunit;
+  public void drivedist(){
+    leftmas.set(ControlMode.PercentOutput,a);
+    rightmas.set(ControlMode.PercentOutput,a);
+   // disttar = dist*DrCon.enoderunit;
+   i++;
+   SmartDashboard.putNumber("key", i);
+   if(i>100){
+     a=0;
+   }
+
+  }
+  public void drivedist(double a){
   }
   public boolean drivedistend(){
     return Math.abs(disttar-leftmas.getSelectedSensorVelocity(0))<500;
@@ -59,11 +67,13 @@ public class Drivetrain extends SubsystemBase {
     disterr = distpoint;
 
   }
-  public void curvaturedrive(double xSpeed,double zRotation,boolean isQuickTurn){
+  public double curvaturedrive(double xSpeed,double zRotation,boolean isQuickTurn){
     
-    curvatureDrive(xSpeed, zRotation, isQuickTurn);
+    curvatureDrive(0.75*xSpeed,zRotation, isQuickTurn);
     rightmas.set(ControlMode.PercentOutput, rightout);
     leftmas.set(ControlMode.PercentOutput,leftout);
+    i++;
+    return i;
   }
   
   @Override
@@ -89,7 +99,7 @@ public class Drivetrain extends SubsystemBase {
   public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
 
     xSpeed = MathUtil.clamp(xSpeed, -1.0, 1.0);
-    if(Math.abs(zRotation)<0.1){
+    if(Math.abs(zRotation)<0.05){
       zRotation =0;
     }
     zRotation = MathUtil.clamp(zRotation, -1.0, 1.0);

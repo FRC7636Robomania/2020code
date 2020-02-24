@@ -34,7 +34,7 @@ public class Easyauto1 extends SequentialCommandGroup {
     new Aim(powercell, vision, drivetrain),
     new Shoot(powercell),
     new InstantCommand(()->powercell.intake(), powercell),
-    new StartEndCommand(()->drivetrain.drivedist(3), ()->drivetrain.drivedist(-2),drivetrain).withInterrupt(() -> drivetrain.drivedistend()),
+    new StartEndCommand(()->drivetrain.drivedist(-3), ()->drivetrain.drivedist(2),drivetrain).withInterrupt(() -> drivetrain.drivedistend()),
     new Aim(powercell, vision, drivetrain),
     new Shoot(powercell)
     );

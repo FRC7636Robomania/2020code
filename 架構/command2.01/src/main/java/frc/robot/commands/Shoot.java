@@ -33,7 +33,7 @@ public class Shoot extends CommandBase {
   @Override
   public void execute() {
     powercellsub.flywheelspinup();
-    powercellsub.conveyor();
+    //powercellsub.conveyor();
     i++;
     SmartDashboard.putString("飛輪狀況", "飛輪加速");
   }
@@ -43,12 +43,12 @@ public class Shoot extends CommandBase {
   public void end(boolean interrupted) {
     powercellsub.flywheelstop();
     SmartDashboard.putString("飛輪狀況", "飛輪停止");
-
+    i=0;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return i>200;
+    return i>600;
   }
 }

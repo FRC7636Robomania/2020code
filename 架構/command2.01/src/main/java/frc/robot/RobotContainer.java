@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.Button;
 import frc.robot.commands.Aim;
@@ -41,22 +42,35 @@ public class RobotContainer {
   private final Vision           m_vision           = new Vision();
   private final Joystick         joystick           = new Joystick(0);
   private final Joystick         drivestation       = new Joystick(2);
-  private final ExampleCommand   m_autoCommand      = new ExampleCommand(m_exampleSubsystem);
+  //private final ExampleCommand   m_autoCommand      = new ExampleCommand(m_exampleSubsystem);
   private final SendableChooser<Command> m_chooser = new SendableChooser<>();
   private final Easyauto m_easyauto = new Easyauto(m_powercell,m_drivetrain,m_vision);
   private final Easyauto1 m_easyauto1 = new Easyauto1(m_powercell,m_drivetrain,m_vision);
   private final Easyauto2 m_easyauto2 = new Easyauto2(m_powercell,m_drivetrain,m_vision);
-  /**
+  /*private final Command m_autoCommand = new StartEndCommand(
+    // Start driving forward at the start of the command
+    () -> m_drivetrain.curvaturedrive(0.1,0,false),
+    // Stop driving at the end of the command
+    () -> m_drivetrain.curvaturedrive(0.1,0,false),
+    // Requires the drive subsystem
+    m_drivetrain)
+    // Reset the encoders before starting
+    // End the command when the robot's driven distance exceeds the desired value
+    .withInterrupt(
+        () -> m_drivetrain.curvaturedrive(0.1,0,false)>100);*/
+/**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    
     // Configure the button bindings
     configureButtonBindings();
     m_drivetrain.setDefaultCommand(new RunCommand(()->
-    m_drivetrain.curvaturedrive(joystick.getY(), joystick.getZ(),joystick.getRawButton(1)),m_drivetrain));
+    m_drivetrain.curvaturedrive(joystick.getY(), 0.3*joystick.getZ(),joystick.getRawButton(1)),m_drivetrain));
     m_chooser.addOption("Simple AutoUP", m_easyauto);
     m_chooser.addOption("Simple AutoMID", m_easyauto1);
     m_chooser.addOption("Simple AutoDOWN", m_easyauto2);
+
 
     // Put the chooser on the dashboard
     Shuffleboard.getTab("Autonomous").add(m_chooser);
@@ -70,7 +84,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     
-    new JoystickButton(drivestation, Button.turrethoming).whenHeld(new InstantCommand(m_powercell::turrethoming,m_powercell));
+    //new JoystickButton(drivestation, Button.turrethoming).whenHeld(new InstantCommand(m_powercell::turrethoming,m_powercell));
     new JoystickButton(drivestation, Button.aim)         .whenHeld(new Aim(m_powercell, m_vision,m_drivetrain));
     new JoystickButton(drivestation, Button.shoot)       .whenHeld(new Shoot(m_powercell));
     new JoystickButton(drivestation, Button.wide)        .whenPressed(new InstantCommand(m_powercell::widein,m_powercell)).whenReleased(new InstantCommand(m_powercell::widestop,m_powercell));
@@ -79,6 +93,7 @@ public class RobotContainer {
     new JoystickButton(drivestation, Button.armdown)     .whenPressed(new InstantCommand(m_powercell::armdown,m_powercell)).whenReleased(new InstantCommand(m_powercell::armstop,m_powercell));
     new JoystickButton(drivestation, Button.turretleft)  .whenPressed(new InstantCommand(m_powercell::turretleft,m_powercell)).whenReleased(new InstantCommand(m_powercell::turretstop,m_powercell));
     new JoystickButton(drivestation, Button.turretright) .whenPressed(new InstantCommand(m_powercell::turretright,m_powercell)).whenReleased(new InstantCommand(m_powercell::turretstop,m_powercell));
+    new JoystickButton(drivestation, 4) .whenPressed(new InstantCommand(m_powercell::conveyor,m_powercell)).whenReleased(new InstantCommand(m_powercell::conveyorstop,m_powercell));
   }
 
 
@@ -89,6 +104,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return m_chooser.getSelected();
   }
 }

@@ -45,9 +45,10 @@ public class Aim extends CommandBase {
     
   //  drivetrainsub.distaim(visionsub.getDisterr());
     x=visionsub.getx();
+    SmartDashboard.putNumber("getx", x);
     powercellsub.turretaim(x);
     
-   SmartDashboard.putString("瞄準狀況", "瞄準中-誤差角為"+x);
+   SmartDashboard.putString("ok", "yee");
   }
   
 
@@ -56,7 +57,7 @@ public class Aim extends CommandBase {
   public void end(boolean interrupted) {
    powercellsub.turretaim(0);
    // drivetrainsub.distaim(0);
-   SmartDashboard.putString("瞄準狀況", "瞄準結束");
+   SmartDashboard.putString("ok", "yeeeeee");
   
   }
 
