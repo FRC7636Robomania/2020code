@@ -63,7 +63,7 @@ public class Powercell extends SubsystemBase {
     return flywheel.getSelectedSensorVelocity(0);
   }
   public void flywheelspinup(){
-    flywheel.set(ControlMode.PercentOutput, 1);
+    flywheel.set(ControlMode.Velocity, 18000);
   }
   
   public void flywheelstop(){
